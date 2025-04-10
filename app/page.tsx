@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { KeyRound, CheckCircle2, XCircle } from "lucide-react";
+import { CheckCircle2, KeyRound, XCircle } from "lucide-react";
+
+import { Button } from "@/components/button";
+import { Card } from "@/components/card";
+import { Input } from "@/components/input";
+import { Progress } from "@/components/progress";
+import { useState } from "react";
 
 interface ValidationResult {
   key: string;
@@ -14,15 +15,15 @@ interface ValidationResult {
 }
 
 export default function Home() {
-  const [keys, setKeys] = useState('');
+  const [keys, setKeys] = useState("");
   const [isValidating, setIsValidating] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [currentKey, setCurrentKey] = useState('');
+  const [currentKey, setCurrentKey] = useState("");
   const [results, setResults] = useState<ValidationResult[]>([]);
 
   const validateKeys = async () => {
-    const keyList = keys.split(/[\s,]+/).filter(key => key.trim());
-    
+    const keyList = keys.split(/[\s,]+/).filter((key) => key.trim());
+
     if (keyList.length === 0) return;
 
     setIsValidating(true);
@@ -35,30 +36,36 @@ export default function Home() {
       setProgress((i / keyList.length) * 100);
 
       try {
-        const response = await fetch('/api/validate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        const response = await fetch("/api/validate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ key }),
         });
 
         const data = await response.json();
-        setResults(prev => [...prev, {
-          key,
-          valid: data.valid,
-          error: data.error
-        }]);
+        setResults((prev) => [
+          ...prev,
+          {
+            key,
+            valid: data.valid,
+            error: data.error,
+          },
+        ]);
       } catch (error) {
-        setResults(prev => [...prev, {
-          key,
-          valid: false,
-          error: 'Network error'
-        }]);
+        setResults((prev) => [
+          ...prev,
+          {
+            key,
+            valid: false,
+            error: "Network error",
+          },
+        ]);
       }
     }
 
     setProgress(100);
     setIsValidating(false);
-    setCurrentKey('');
+    setCurrentKey("");
   };
 
   return (
@@ -69,7 +76,8 @@ export default function Home() {
             OpenAI Key Validator
           </h1>
           <p className="text-gray-600 dark:text-gray-300">
-            Enter your OpenAI API keys (space or comma separated) to validate them
+            Enter your OpenAI API keys (space or comma separated) to validate
+            them
           </p>
         </div>
 
@@ -83,7 +91,7 @@ export default function Home() {
                 className="font-mono"
               />
             </div>
-            
+
             <Button
               onClick={validateKeys}
               disabled={isValidating || !keys.trim()}
@@ -124,9 +132,7 @@ export default function Home() {
                     </span>
                   </div>
                   {!result.valid && (
-                    <span className="text-sm text-red-500">
-                      {result.error}
-                    </span>
+                    <span className="text-sm text-red-500">{result.error}</span>
                   )}
                 </div>
               ))}
